@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"fmt"
 	"net"
 )
@@ -29,16 +30,16 @@ func handleClient(conn net.Conn){
 	defer conn.Close()
 
 
-	buffer := make([] byte,1024)
+	reader := bufio.NewReader(conn)
 
 	for {
-		n,err := conn.Read(buffer)
+		line,err := reader.ReadString('\n')
 		if err !=nil {
 			fmt.Println("Error :", err)
 			return 
 		} 
 
-		fmt.Printf("Recieved: %s\n", buffer[:n])
+		fmt.Printf("Recieved: %s\n", line)
 	}
 
 	// Write data to the client
