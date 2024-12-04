@@ -8,13 +8,12 @@ import (
 	"strings"
 )
 
-func parseInteger(reader *bufio.Reader)(string, error){
-	data, err := reader.ReadString('\n')
-	
+func parseInteger(reader *bufio.Reader) (int64,error){
+	line, err := reader.ReadString('\n')
 	if err !=nil {
-		return "", err
+		return 0, err
 	}
-	return strings.TrimSuffix(data,"\r\n"), nil
+	return strconv.ParseInt(strings.TrimSuffix(line,"\r\n"), 10 ,64)
 }
 
 func parseSimpleString(reader *bufio.Reader)(string,error){
@@ -100,7 +99,7 @@ func parseError(reader *bufio.Reader) (error, error) {
 func ParseRESP(reader *bufio.Reader)(interface{}, error){
 	// Reading first byte to determine the type
 	prefix,err := reader.ReadByte();
-
+	
 	if err != nil {
 		return nil, err
 	}
