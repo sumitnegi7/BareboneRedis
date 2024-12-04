@@ -6,10 +6,8 @@ import (
 	"net"
 )
 
-
-var store map[string]string =  make(map[string]string)
-
 func main() {
+	safeMap := NewSafeMap()
 	li, err := net.Listen("tcp",":6382")
 	if err != nil {
 		fmt.Println("error")
@@ -19,17 +17,20 @@ func main() {
 
 	fmt.Println("Server in listening a port 6382")
 
+
+	
 	for {
 		conn, err := li.Accept();
 		if err != nil {
 			fmt.Println("error")
 			continue
 		}		
-			go handleClient(conn)
+			go handleClient(conn,safeMap)
+			go safeMap.cleanupExpiredKeys()
 	}
 }
 
-func handleClient(conn net.Conn){
+func handleClient(conn net.Conn,safeMap *SafeMap){
 	defer conn.Close()
 
 
@@ -66,7 +67,7 @@ func handleClient(conn net.Conn){
 			stringArgs[i]= strArg
 		}
 		fmt.Println("Client 12 :", command, stringArgs)
-		handleCommand(conn, command, stringArgs,store)
+		handleCommand(conn, command, stringArgs,safeMap)
 
 	}
 }
